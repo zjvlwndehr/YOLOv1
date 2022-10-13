@@ -43,9 +43,9 @@ for i in YOLO_Tiny.layers:
 ##################### Head #####################
 
 YOLO_Tiny.add(tf.keras.layers.Conv2D(1024, (3, 3), activation=LEAKY_RELU, kernel_initializer=INITIALIZER, kernel_regularizer = REGULARIZER, padding = 'SAME', name = "detection_conv1", dtype='float32'))
-# YOLO_Tiny.add(tf.keras.layers.Conv2D(1024, (3, 3), activation=LEAKY_RELU, kernel_initializer=INITIALIZER, kernel_regularizer = REGULARIZER, padding = 'SAME', name = "detection_conv2", dtype='float32'))
+YOLO_Tiny.add(tf.keras.layers.Conv2D(1024, (3, 3), activation=LEAKY_RELU, kernel_initializer=INITIALIZER, kernel_regularizer = REGULARIZER, padding = 'SAME', name = "detection_conv2", dtype='float32'))
 YOLO_Tiny.add(tf.keras.layers.MaxPool2D((2, 2)))
-# YOLO_Tiny.add(tf.keras.layers.Conv2D(1024, (3, 3), activation=LEAKY_RELU, kernel_initializer=INITIALIZER, kernel_regularizer = REGULARIZER, padding = 'SAME', name = "detection_conv3", dtype='float32'))
+YOLO_Tiny.add(tf.keras.layers.Conv2D(1024, (3, 3), activation=LEAKY_RELU, kernel_initializer=INITIALIZER, kernel_regularizer = REGULARIZER, padding = 'SAME', name = "detection_conv3", dtype='float32'))
 YOLO_Tiny.add(tf.keras.layers.Conv2D(1024, (3, 3), activation=LEAKY_RELU, kernel_initializer=INITIALIZER, kernel_regularizer = REGULARIZER, padding = 'SAME', name = "detection_conv4", dtype='float32'))
 # Linear 부분
 YOLO_Tiny.add(tf.keras.layers.Flatten())
