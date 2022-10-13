@@ -7,8 +7,8 @@ import cv2
 from api import *
 
 # GPU : 1050Ti 4GB
-BATCH_SIZE = 8
-EPOCH = 75
+BATCH_SIZE = 64
+EPOCH = 100
 INITIALIZER = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.01, seed=None)
 LEAKY_RELU = tf.keras.layers.LeakyReLU(alpha=0.1)
 REGULARIZER = tf.keras.regularizers.l2(0.0005) # L2 Regularization 
