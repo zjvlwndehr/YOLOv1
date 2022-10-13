@@ -52,8 +52,8 @@ YOLO_Tiny.add(tf.keras.layers.Flatten())
 YOLO_Tiny.add(tf.keras.layers.Dense(1024, activation=LEAKY_RELU, kernel_initializer = INITIALIZER, kernel_regularizer = REGULARIZER, name = "detection_linear1", dtype='float32'))
 YOLO_Tiny.add(tf.keras.layers.Dropout(.5))
 # 입력값을 내보내는 출력층
-YOLO_Tiny.add(tf.keras.layers.Dense(1225, kernel_initializer = INITIALIZER, kernel_regularizer = REGULARIZER, name = "detection_linear2", dtype='float32')) 
-YOLO_Tiny.add(tf.keras.layers.Reshape((7, 7, 25), name = 'output', dtype='float32'))
+YOLO_Tiny.add(tf.keras.layers.Dense(1470, kernel_initializer = INITIALIZER, kernel_regularizer = REGULARIZER, name = "detection_linear2", dtype='float32')) 
+YOLO_Tiny.add(tf.keras.layers.Reshape((7, 7, 30), name = 'output', dtype='float32'))
 
 #################### Train #####################
 

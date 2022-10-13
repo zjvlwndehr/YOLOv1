@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import cv2
@@ -64,7 +65,7 @@ def dataset(csv: pd.DataFrame, img_path_list: list)->tuple:
     print('[dataset()]')
     image_dataset = []
     label_dataset = []
-    for i in range(0, len(img_path_list)):
+    for i in tqdm(range(0, len(img_path_list))):
         # RGB(0~255) -> RGB(0~1)
         image = cv2.resize(cv2.imread(img_path_list[i]), (INPUT_SHAPE[0], INPUT_SHAPE[1])) / 255.0
         label = cell_labeling(csv,i)
