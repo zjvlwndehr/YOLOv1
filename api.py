@@ -27,58 +27,58 @@ def show_bbox(title: str, image: np.mat, xmin: float, ymin: float, xmax: float, 
 
 # CSV: image 	xmin	ymin	xmax	ymax
 # return -> label: np.ndarray(7, 7, 25)
-def cell_labeling(csv: pd.DataFrame)->np.ndarray:
-    print('[cell_labeling()]')
+def cell_labeling(csv: pd.DataFrame, idx: int)->np.ndarray:
+    # print('[cell_labeling()]')
     # csv->image  	xmin	ymin	xmx     ymax
-
     label = np.zeros((7, 7, 25), dtype = float)
-    for i in range(0, len(csv)):
-        ### Convert into 244 x 244 ###
-        xmin = float((INPUT_SHAPE[0] / IMAGE_SIZE[0]) * csv['xmin'][i])
-        ymin = float((INPUT_SHAPE[1] / IMAGE_SIZE[1]) * csv['ymin'][i])
-        xmax = float((INPUT_SHAPE[0] / IMAGE_SIZE[0]) * csv['xmax'][i])
-        ymax = float((INPUT_SHAPE[1] / IMAGE_SIZE[1]) * csv['ymax'][i])
+    ### Convert into 244 x 244 ###
+    xmin = float((INPUT_SHAPE[0] / IMAGE_SIZE[0]) * csv['xmin'][idx])
+    ymin = float((INPUT_SHAPE[1] / IMAGE_SIZE[1]) * csv['ymin'][idx])
+    xmax = float((INPUT_SHAPE[0] / IMAGE_SIZE[0]) * csv['xmax'][idx])
+    ymax = float((INPUT_SHAPE[1] / IMAGE_SIZE[1]) * csv['ymax'][idx])
 
-        x = (xmin + xmax) / 2.0
-        y = (ymin + ymax) / 2.0
-        w = float((xmax - xmin) / INPUT_SHAPE[0])
-        h = float((ymax - ymin) / INPUT_SHAPE[1])
-        # print('x: {}, y: {}, w: {}, h: {}'.format(x, y, w, h))
+    x = (xmin + xmax) / 2.0
+    y = (ymin + ymax) / 2.0
+    w = float((xmax - xmin) / INPUT_SHAPE[0])
+    h = float((ymax - ymin) / INPUT_SHAPE[1])
+    # print('x: {}, y: {}, w: {}, h: {}'.format(x, y, w, h))
 
-        ### find out which cell (x, y) is in ###
-        ### 7 x 7 grid ###
-        cell_x = int(x / (INPUT_SHAPE[0] / 7))
-        cell_y = int(y / (INPUT_SHAPE[1] / 7))
-        center_x = float((x - cell_x * (INPUT_SHAPE[0] / 7)) / (INPUT_SHAPE[0] / 7))
-        center_y = float((y - cell_y * (INPUT_SHAPE[1] / 7)) / (INPUT_SHAPE[1] / 7))
-        # print('cell_x: {},  cell_y: {}'.format(cell_x, cell_y))
+    ### find out which cell (x, y) is in ###
+    ### 7 x 7 grid ###
+    cell_x = int(x / (INPUT_SHAPE[0] / 7))
+    cell_y = int(y / (INPUT_SHAPE[1] / 7))
+    center_x = float((x - cell_x * (INPUT_SHAPE[0] / 7)) / (INPUT_SHAPE[0] / 7))
+    center_y = float((y - cell_y * (INPUT_SHAPE[1] / 7)) / (INPUT_SHAPE[1] / 7))
+    # print('cell_x: {},  cell_y: {}'.format(cell_x, cell_y))
 
-        label[cell_y, cell_x, 0] = center_x # center_x
-        label[cell_y, cell_x, 1] = center_y # center_y
-        label[cell_y, cell_x, 2] = w # width
-        label[cell_y, cell_x, 3] = h # height
-        label[cell_y, cell_x, 4] = 1.0 # confidence
-        label[cell_y, cell_x, 5] = 1 # class 1개밖에 없음;;
+    label[cell_y, cell_x, 0] = center_x # center_x
+    label[cell_y, cell_x, 1] = center_y # center_y
+    label[cell_y, cell_x, 2] = w # width
+    label[cell_y, cell_x, 3] = h # height
+    label[cell_y, cell_x, 4] = 1.0 # confidence
+    label[cell_y, cell_x, 5] = 1 # class 1개밖에 없음;;
     # print(label.shape)
     return label
 
-def dataset(img_path_list: list, label: np.ndarray)->tuple:
+def dataset(csv: pd.DataFrame, img_path_list: list)->tuple:
     print('[dataset()]')
     image_dataset = []
-
+    label_dataset = []
     for i in range(0, len(img_path_list)):
         # RGB(0~255) -> RGB(0~1)
-        image = cv2.imread(img_path_list[i])
-        image = cv2.resize(image, (INPUT_SHAPE[0], INPUT_SHAPE[1])) / 255.0
+        image = cv2.resize(cv2.imread(img_path_list[i]), (INPUT_SHAPE[0], INPUT_SHAPE[1])) / 255.0
+        label = cell_labeling(csv,i)
         image_dataset.append(image)
-
+        label_dataset.append(label)
     image_dataset = np.array(image_dataset, dtype="object")
-    label = np.array(label, dtype="object")
+    label_dataset = np.array(label_dataset, dtype="object")
 
     image_dataset = np.reshape(image_dataset, (-1, INPUT_SHAPE[0], INPUT_SHAPE[1], INPUT_SHAPE[2])).astype(np.float32)
-    label = np.reshape(label, (-1, 7, 7, 25)).astype(np.float32)
-    print('[image_dataset.shape: {},    label_dataset.shape: {}]'.format(image_dataset.shape, label.shape))
-    return image_dataset, tf.convert_to_tensor(label, dtype=tf.float32)
+    label_dataset = np.reshape(label_dataset, (-1, 7, 7, 25)).astype(np.float32)
+    print('[image_dataset.shape: {},    label_dataset.shape: {}]'.format(image_dataset.shape, label_dataset.shape))
+    return image_dataset, tf.convert_to_tensor(label_dataset, dtype=tf.float32)
+
+
 
 def LOSS(true_y, pred_y): # Loss Function; loss per batch
     loss=0

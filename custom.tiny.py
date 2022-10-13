@@ -52,8 +52,8 @@ YOLO_Tiny.add(tf.keras.layers.Flatten())
 YOLO_Tiny.add(tf.keras.layers.Dense(1024, activation=LEAKY_RELU, kernel_initializer = INITIALIZER, kernel_regularizer = REGULARIZER, name = "detection_linear1", dtype='float32'))
 YOLO_Tiny.add(tf.keras.layers.Dropout(.5))
 # 입력값을 내보내는 출력층
-YOLO_Tiny.add(tf.keras.layers.Dense(1470, kernel_initializer = INITIALIZER, kernel_regularizer = REGULARIZER, name = "detection_linear2", dtype='float32')) 
-YOLO_Tiny.add(tf.keras.layers.Reshape((7, 7, 30), name = 'output', dtype='float32'))
+YOLO_Tiny.add(tf.keras.layers.Dense(1225, kernel_initializer = INITIALIZER, kernel_regularizer = REGULARIZER, name = "detection_linear2", dtype='float32')) 
+YOLO_Tiny.add(tf.keras.layers.Reshape((7, 7, 25), name = 'output', dtype='float32'))
 
 #################### Train #####################
 
@@ -61,9 +61,8 @@ YOLO_Tiny.summary()
 
 YOLO_Tiny.compile(loss=yolo_loss, optimizer=OPTIMIZER, run_eagerly=True)
 
-D_set, L_set = dataset(IMAGE_PATH_LIST, cell_labeling(csv))
+D_set, L_set = dataset(csv, IMAGE_PATH_LIST)
 
 print(f'D_set : {D_set.shape},  L_set : {L_set.shape}')
-
-# YOLO_Tiny.fit(D_set, L_set, batch_size=BATCH_SIZE, epochs=EPOCH, verbose=1, callbacks=[CHECKPOINT, LEARNING_RATE_SCHEDULE])
+YOLO_Tiny.fit(D_set, L_set, batch_size=BATCH_SIZE, epochs=EPOCH, verbose=1, callbacks=[CHECKPOINT, LEARNING_RATE_SCHEDULE])
 # YOLO_Tiny.save('YOLOv1.h5')
