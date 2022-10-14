@@ -59,10 +59,13 @@ YOLO_Tiny.add(tf.keras.layers.Reshape((7, 7, 30), name = 'output', dtype='float3
 
 YOLO_Tiny.summary()
 
-YOLO_Tiny.compile(loss=yolo_loss, optimizer=OPTIMIZER, run_eagerly=True)
+LOSS_FUNCTION = yolo_loss
+LOSS_FUNCTION = tf.keras.losses.MeanSquaredError()
+
+YOLO_Tiny.compile(loss=LOSS_FUNCTION, optimizer=OPTIMIZER, run_eagerly=True)
 
 D_set, L_set = dataset(csv, IMAGE_PATH_LIST)
 
 print(f'D_set : {D_set.shape},  L_set : {L_set.shape}')
 YOLO_Tiny.fit(D_set, L_set, batch_size=BATCH_SIZE, epochs=EPOCH, verbose=1, callbacks=[CHECKPOINT, LEARNING_RATE_SCHEDULE])
-# YOLO_Tiny.save('YOLOv1.h5')
+YOLO_Tiny.save('YOLOv1.h5')

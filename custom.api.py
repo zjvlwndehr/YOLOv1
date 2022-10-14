@@ -79,8 +79,6 @@ def dataset(csv: pd.DataFrame, img_path_list: list)->tuple:
     print('[image_dataset.shape: {},    label_dataset.shape: {}]'.format(image_dataset.shape, label_dataset.shape))
     return image_dataset, tf.convert_to_tensor(label_dataset, dtype=tf.float32)
 
-
-
 def LOSS(true_y, pred_y): # Loss Function; loss per batch
     loss=0
     for i in range(0, len(true_y)):
