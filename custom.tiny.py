@@ -1,4 +1,3 @@
-from gc import callbacks
 import tensorflow as tf
 from glob import glob
 import pandas as pd
@@ -6,19 +5,22 @@ import numpy as np
 import cv2
 from api import *
 
-# GPU : 1050Ti 4GB
-BATCH_SIZE = 64
-EPOCH = 100
+# BATCH_SIZE = 64
+BATCH_SIZE = 16
+EPOCH = 10
 INITIALIZER = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.01, seed=None)
 LEAKY_RELU = tf.keras.layers.LeakyReLU(alpha=0.1)
 REGULARIZER = tf.keras.regularizers.l2(0.0005) # L2 Regularization 
 OPTIMIZER = tf.keras.optimizers.SGD(learning_rate=0.001, momentum=0.9)
 EXPORT_NAME = 'YOLOv1Tiny.h5'
-CHECKPOINT = tf.keras.callbacks.ModelCheckpoint(EXPORT_NAME, verbose=1, save_best_only=True)
+CHECKPOINT = tf.keras.callbacks.ModelCheckpoint(EXPORT_NAME, verbose=1, save_best_only=False)
 LEARNING_RATE_SCHEDULE = tf.keras.callbacks.LearningRateScheduler(lr_schedule)
+LOSS_FUNCTION = yolo_loss
+LOSS_FUNCTION = tf.keras.losses.MeanSquaredError()
+# LOSS_FUNCTION = tf.keras.losses.binary_crossentropy()
 
 IMAGE_SIZE = np.array([676, 380, 3])
-CSV_PATH = 'data/train_bbox.csv'
+CSV_PATH = './data/train_bbox.csv'
 x_train_path = './data/train/*.jpg'
 INPUT_SHAPE = (224, 224, 3)
 csv = load_csv(CSV_PATH)
@@ -59,10 +61,12 @@ YOLO_Tiny.add(tf.keras.layers.Reshape((7, 7, 30), name = 'output', dtype='float3
 
 YOLO_Tiny.summary()
 
-YOLO_Tiny.compile(loss=yolo_loss, optimizer=OPTIMIZER, run_eagerly=True)
+# YOLO_Tiny.compile(loss=LOSS_FUNCTION, optimizer=OPTIMIZER, run_eagerly=True)
+YOLO_Tiny.compile(loss=tf.keras.losses.MeanSquaredError(), optimizer='sgd')
 
 D_set, L_set = dataset(csv, IMAGE_PATH_LIST)
 
 print(f'D_set : {D_set.shape},  L_set : {L_set.shape}')
+
 YOLO_Tiny.fit(D_set, L_set, batch_size=BATCH_SIZE, epochs=EPOCH, verbose=1, callbacks=[CHECKPOINT, LEARNING_RATE_SCHEDULE])
-# YOLO_Tiny.save('YOLOv1.h5')
+YOLO_Tiny.save('YOLOv1.Final.h5')

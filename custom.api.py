@@ -31,7 +31,8 @@ def show_bbox(title: str, image: np.mat, xmin: float, ymin: float, xmax: float, 
 def cell_labeling(csv: pd.DataFrame, idx: int)->np.ndarray:
     # print('[cell_labeling()]')
     # csv->image  	xmin	ymin	xmx     ymax
-    label = np.zeros((7, 7, 25), dtype = float)
+    label = np.zeros((7, 7, 30), dtype = float)
+    # label = np.zeros((7, 7, 25), dtype = float)
     ### Convert into 244 x 244 ###
     xmin = float((INPUT_SHAPE[0] / IMAGE_SIZE[0]) * csv['xmin'][idx])
     ymin = float((INPUT_SHAPE[1] / IMAGE_SIZE[1]) * csv['ymin'][idx])
@@ -75,7 +76,8 @@ def dataset(csv: pd.DataFrame, img_path_list: list)->tuple:
     label_dataset = np.array(label_dataset, dtype="object")
 
     image_dataset = np.reshape(image_dataset, (-1, INPUT_SHAPE[0], INPUT_SHAPE[1], INPUT_SHAPE[2])).astype(np.float32)
-    label_dataset = np.reshape(label_dataset, (-1, 7, 7, 25)).astype(np.float32)
+    label_dataset = np.reshape(label_dataset, (-1, 7, 7, 30)).astype(np.float32)
+    # label_dataset = np.reshape(label_dataset, (-1, 7, 7, 25)).astype(np.float32)
     print('[image_dataset.shape: {},    label_dataset.shape: {}]'.format(image_dataset.shape, label_dataset.shape))
     return image_dataset, tf.convert_to_tensor(label_dataset, dtype=tf.float32)
 
